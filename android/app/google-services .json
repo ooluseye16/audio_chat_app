@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "211601566475",
+    "project_id": "audio-chat-app-619dc",
+    "storage_bucket": "audio-chat-app-619dc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:211601566475:android:1b5f68562a07fff6f2900e",
+        "android_client_info": {
+          "package_name": "com.tirioh.audio_chat_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "211601566475-t9p6qpmcf8mlo0uasbt97iicsrsq6ld5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tirioh.audio_chat_app",
+            "certificate_hash": "3d7c32724a1490b8ae616794c8fec9dd2851c910"
+          }
+        },
+        {
+          "client_id": "211601566475-banlj31uhptjevirsge19rgh478f45bq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCs2knyQXlkfRaZBUg8bjwwS6I3SxqaCug"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "211601566475-banlj31uhptjevirsge19rgh478f45bq.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "211601566475-84fqlb1qhh010ki10j7o1ignjc0ir94h.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.tirio"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
