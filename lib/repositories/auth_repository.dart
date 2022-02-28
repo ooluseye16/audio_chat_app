@@ -1,4 +1,6 @@
 import 'package:audio_chat_app/constants.dart';
+import 'package:audio_chat_app/models/user.dart';
+import 'package:audio_chat_app/repositories/database_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -37,6 +39,10 @@ class AuthRepository {
       final authCredential =
           await auth.signInWithCredential(phoneAuthCredential);
       if (authCredential.user != null) {
+        DatabaseRepository().saveUser(UserDetails(
+          phoneNumber: authCredential.user!.phoneNumber,
+          id: authCredential.user!.uid,
+        ));
         context.goNamed(homeRouteName);
       }
     } on FirebaseAuthException catch (e) {

@@ -54,7 +54,7 @@ class MyRouter {
         path: '/home',
         pageBuilder: (context, state) => MaterialPage<void>(
           key: state.pageKey,
-          child: const HomeScreen(),
+          child: HomeScreen(),
         ),
       ),
     ],
