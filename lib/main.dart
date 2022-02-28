@@ -1,12 +1,17 @@
 import 'package:audio_chat_app/login_state.dart';
 import 'package:audio_chat_app/router/routes.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
+import 'firebase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final state = LoginState(await SharedPreferences.getInstance());
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  final state = LoginState();
   state.isloggedIn();
   runApp(MyApp(loginState: state));
 }

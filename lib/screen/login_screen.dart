@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:audio_chat_app/repositories/auth_repository.dart';
 import 'package:flutter/material.dart';
 
@@ -28,7 +27,7 @@ class LoginScreen extends StatelessWidget {
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () async {
-                  log("aa");
+               
                   final AuthRepository authRepository = AuthRepository(context);
                   await authRepository
                       .signUpWithPhoneNumber(phoneNumberController.text);
