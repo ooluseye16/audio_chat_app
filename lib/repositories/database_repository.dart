@@ -20,4 +20,19 @@ class DatabaseRepository {
       log(e.toString());
     }
   }
+
+  Query getMessageQuery() {
+    return _messagesRef;
+  }
+
+  Future<List<String>> getAllUsers() async {
+    List<String> usersPhoneNumbers = [];
+    DataSnapshot data = await getMessageQuery().get();
+    Map<dynamic, dynamic> values = data.value as Map<dynamic, dynamic>;
+    values.forEach((key, values) {
+      final user = UserDetails.fromJson(values);
+      usersPhoneNumbers.add(user.phoneNumber ?? " ");
+    });
+    return usersPhoneNumbers;
+  }
 }

@@ -1,23 +1,34 @@
-import 'package:audio_chat_app/models/user.dart';
 import 'package:audio_chat_app/repositories/auth_repository.dart';
 import 'package:audio_chat_app/repositories/database_repository.dart';
 import 'package:flutter/material.dart';
 
-class HomeScreen extends StatelessWidget {
-  HomeScreen({Key? key}) : super(key: key);
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({Key? key}) : super(key: key);
 
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
   TextEditingController nameController = TextEditingController();
+  DatabaseRepository databaseRepository = DatabaseRepository();
+
+  @override
+  void initState() {
+    super.initState();
+    databaseRepository.getAllUsers();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Home'),
+        title: const Text('Home'),
         actions: [
           IconButton(
-            icon: Icon(Icons.exit_to_app),
+            icon: const Icon(Icons.exit_to_app),
             onPressed: () {
               AuthRepository(context).signOut();
-              
             },
           ),
         ],
@@ -37,8 +48,8 @@ class HomeScreen extends StatelessWidget {
             const SizedBox(height: 16),
             ElevatedButton(
                 onPressed: () {
-                  DatabaseRepository().updateUserName(
-                   nameController.text,
+                  databaseRepository.updateUserName(
+                    nameController.text,
                   );
                 },
                 child: const Text('Submit')),

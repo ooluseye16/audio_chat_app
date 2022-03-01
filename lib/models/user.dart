@@ -11,10 +11,10 @@ class UserDetails {
         'phoneNumber': phoneNumber,
       };
 
-  static UserDetails fromJson(Map<String, dynamic> json) => UserDetails(
-        id: json['id'] as String,
-        name: json['name'] as String,
-        phoneNumber: json['phoneNumber'] as String,
+  static UserDetails fromJson(Map<dynamic, dynamic> json) => UserDetails(
+        id: json['id'] as String?,
+        name: json['name'] as String?,
+        phoneNumber: json['phoneNumber'] as String?,
       );
 
   @override
