@@ -27,6 +27,7 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  contacts_service: ^0.6.3
   cupertino_icons: ^1.0.2
   firebase_auth: ^3.3.9
   firebase_core: ^1.13.1
@@ -34,6 +35,7 @@ dependencies:
   flutter:
     sdk: flutter
   go_router: ^3.0.2
+  permission_handler: ^9.2.0
   provider: ^6.0.2
 
 dev_dependencies:

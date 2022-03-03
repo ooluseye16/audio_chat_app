@@ -7,7 +7,7 @@ import 'package:firebase_database/firebase_database.dart';
 class DatabaseRepository {
   final currentUser = FirebaseAuth.instance.currentUser;
   final DatabaseReference _messagesRef =
-      FirebaseDatabase.instance.ref().child('users');
+      FirebaseDatabase.instance.ref('users');
 
   saveUser(UserDetails user) {
     _messagesRef.child(currentUser!.uid).update(user.toJson());
@@ -25,7 +25,7 @@ class DatabaseRepository {
     return _messagesRef;
   }
 
-  Future<List<String>> getAllUsers() async {
+  Future<List<String>> getAllUsersPhoneNumber() async {
     List<String> usersPhoneNumbers = [];
     DataSnapshot data = await getMessageQuery().get();
     Map<dynamic, dynamic> values = data.value as Map<dynamic, dynamic>;
@@ -33,6 +33,6 @@ class DatabaseRepository {
       final user = UserDetails.fromJson(values);
       usersPhoneNumbers.add(user.phoneNumber ?? " ");
     });
-    return usersPhoneNumbers;
+    return usersPhoneNumbers.where((element) => element != currentUser?.phoneNumber).toList();
   }
 }

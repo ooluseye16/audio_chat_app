@@ -1,4 +1,5 @@
 import 'package:audio_chat_app/login_state.dart';
+import 'package:audio_chat_app/provider/contact_provider.dart';
 import 'package:audio_chat_app/router/routes.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -29,6 +30,10 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<LoginState>(
           lazy: false,
           create: (BuildContext createContext) => loginState,
+        ),
+        ChangeNotifierProvider<ContactsProvider>(
+          lazy: false,
+          create: (BuildContext createContext) => ContactsProvider(),
         ),
         Provider<MyRouter>(
           lazy: false,

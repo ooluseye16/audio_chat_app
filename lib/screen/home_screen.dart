@@ -1,6 +1,8 @@
+import 'package:audio_chat_app/provider/contact_provider.dart';
 import 'package:audio_chat_app/repositories/auth_repository.dart';
-import 'package:audio_chat_app/repositories/database_repository.dart';
+import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -10,13 +12,13 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  TextEditingController nameController = TextEditingController();
-  DatabaseRepository databaseRepository = DatabaseRepository();
+  List<Contact> contacts = [];
 
   @override
   void initState() {
     super.initState();
-    databaseRepository.getAllUsers();
+    contacts =
+        Provider.of<ContactsProvider>(context, listen: false).contactsInDB;
   }
 
   @override
@@ -34,28 +36,15 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       body: SafeArea(
-          child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            TextFormField(
-              controller: nameController,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Enter your name',
-              ),
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-                onPressed: () {
-                  databaseRepository.updateUserName(
-                    nameController.text,
-                  );
-                },
-                child: const Text('Submit')),
-          ],
+        child: ListView.separated(
+          itemCount: contacts.length,
+          separatorBuilder: (context, index) => const Divider(),
+          itemBuilder: (context, index) => ListTile(
+            title: Text(contacts[index].displayName ?? "No name"),
+            subtitle: Text(contacts[index].phones!.first.value!),
+          ),
         ),
-      )),
+      ),
     );
   }
 }
