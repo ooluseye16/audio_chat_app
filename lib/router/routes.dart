@@ -1,12 +1,16 @@
 import 'package:audio_chat_app/constants.dart';
 import 'package:audio_chat_app/login_state.dart';
+import 'package:audio_chat_app/models/user.dart';
 import 'package:audio_chat_app/screen/error_page.dart';
 import 'package:audio_chat_app/screen/home_screen.dart';
 import 'package:audio_chat_app/screen/login_screen.dart';
 import 'package:audio_chat_app/screen/otp_screen.dart';
 import 'package:audio_chat_app/screen/splash_screen.dart';
+import 'package:audio_chat_app/screen/update_username.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+
+import '../screen/chat_screen.dart';
 
 class MyRouter {
   final LoginState loginState;
@@ -47,6 +51,13 @@ class MyRouter {
                 key: state.pageKey,
                 child: OTPScreen(verificationId: state.extra! as String),
               ),
+            ),GoRoute(
+              name: updatenameRouteName,
+              path: "update_name",
+              pageBuilder: (context, state) => MaterialPage<void>(
+                key: state.pageKey,
+                child: UpdateUsernameScreen(),
+              ),
             )
           ]),
       GoRoute(
@@ -54,8 +65,10 @@ class MyRouter {
         path: '/home',
         pageBuilder: (context, state) => MaterialPage<void>(
           key: state.pageKey,
-          child: HomeScreen(),
+          child: const HomeScreen(),
         ),
+        
+        
       ),
     ],
     errorPageBuilder: (context, state) => MaterialPage<void>(

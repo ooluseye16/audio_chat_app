@@ -43,7 +43,7 @@ class AuthRepository {
           phoneNumber: authCredential.user!.phoneNumber,
           id: authCredential.user!.uid,
         ));
-        context.goNamed(homeRouteName);
+        context.goNamed(updatenameRouteName);
       }
     } on FirebaseAuthException catch (e) {
       debugPrint(e.message);

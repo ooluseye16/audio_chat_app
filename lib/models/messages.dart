@@ -1,20 +1,26 @@
 class Message {
-  String? message;
-
-  String? date;
+  String? content;
+  DateTime date;
+  String? idTo;
+  String timeStamp;
 
   Message({
-    this.message,
-    this.date,
+    this.content,
+    this.idTo,
+    required this.date,
+    required this.timeStamp,
   });
 
-  factory Message.fromJson(Map<String, dynamic> json) => Message(
-        message: json["message"],
-        date: json["date"],
-      );
+  factory Message.fromJson(Map<dynamic, dynamic> json) => Message(
+      content: json["content"],
+      date: DateTime.parse(json["date"]),
+      idTo: json["idTo"],
+      timeStamp: json["timeStamp"]);
 
   Map<String, dynamic> toJson() => {
-        "message": message,
-        "date": date,
+        "content": content,
+        "idTo": idTo,
+        "date": date.toString(),
+        "timeStamp": timeStamp,
       };
 }
