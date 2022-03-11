@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:audio_chat_app/extensions.dart';
 import 'package:audio_chat_app/models/messages.dart';
 import 'package:audio_chat_app/models/user.dart';
 import 'package:collection/collection.dart';
@@ -7,8 +8,26 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 
 class DatabaseRepository {
-  final currentUser = FirebaseAuth.instance.currentUser;
-  final DatabaseReference _messagesRef = FirebaseDatabase.instance.ref('users');
+  static final DatabaseRepository _databaseRepository =
+      DatabaseRepository._internal();
+
+  factory DatabaseRepository() {
+    return _databaseRepository;
+  }
+ 
+  DatabaseRepository._internal() {
+    FirebaseDatabase database;
+    database = FirebaseDatabase.instance;
+    database.setPersistenceEnabled(true);
+    database.setPersistenceCacheSizeBytes(10000000);
+
+    _messagesRef = database.ref('users');
+  }
+
+
+ final currentUser = FirebaseAuth.instance.currentUser;
+  late DatabaseReference _messagesRef;
+  
   saveUser(UserDetails user) {
     _messagesRef.child(currentUser!.uid).update(user.toJson());
   }
@@ -52,8 +71,9 @@ class DatabaseRepository {
   Future<UserDetails?> getUser(String phoneNumber) async {
     List<UserDetails?> users = await getAllUsers();
 
-    final UserDetails? user = users.firstWhereOrNull(
-        (element) => element?.phoneNumber == phoneNumber.replaceAll(" ", ""));
+    final UserDetails? user = users.firstWhereOrNull((element) =>
+        element?.phoneNumber?.validPhoneNumber ==
+        phoneNumber.replaceAll(" ", "").validPhoneNumber);
 
     if (user != null) {
       print(user.toString());

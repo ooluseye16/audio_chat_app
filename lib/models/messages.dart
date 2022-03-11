@@ -15,12 +15,12 @@ class Message {
       content: json["content"],
       date: DateTime.parse(json["date"]),
       idTo: json["idTo"],
-      timeStamp: json["timeStamp"]);
+      timeStamp: json["timestamp"]);
 
   Map<String, dynamic> toJson() => {
         "content": content,
         "idTo": idTo,
         "date": date.toString(),
-        "timeStamp": timeStamp,
+        "timestamp": timeStamp,
       };
 }

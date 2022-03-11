@@ -1,6 +1,5 @@
 import 'package:audio_chat_app/constants.dart';
 import 'package:audio_chat_app/login_state.dart';
-import 'package:audio_chat_app/models/user.dart';
 import 'package:audio_chat_app/screen/error_page.dart';
 import 'package:audio_chat_app/screen/home_screen.dart';
 import 'package:audio_chat_app/screen/login_screen.dart';
@@ -10,7 +9,6 @@ import 'package:audio_chat_app/screen/update_username.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../screen/chat_screen.dart';
 
 class MyRouter {
   final LoginState loginState;

@@ -1,7 +1,8 @@
+import 'dart:async';
+
 import 'package:audio_chat_app/models/messages.dart';
 import 'package:audio_chat_app/repositories/database_repository.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -20,11 +21,25 @@ class ChatScreen extends StatelessWidget {
   final String conversationId;
 
   final List<Message> listOfMessages = [];
+
   final textEditingController = TextEditingController();
-  final ScrollController _scrollController = ScrollController();
+
+  final ScrollController _scrollController =
+      ScrollController(keepScrollOffset: false);
+
+  void _scrollToBottom() {
+    if (_scrollController.hasClients) {
+      _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+    } else {
+      Timer(const Duration(milliseconds: 200), () => _scrollToBottom());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance?.addPostFrameCallback((_) => _scrollToBottom());
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: Text(
           displayName ?? '',
@@ -36,116 +51,58 @@ class ChatScreen extends StatelessWidget {
         child: Column(
           children: <Widget>[
             Expanded(
-              child: FirebaseAnimatedList(
-                controller: _scrollController,
-                query: FirebaseDatabase.instance
-                    .ref("messages")
-                    .child(conversationId)
-                    .ref
-                    .orderByChild('timestamp'),
-                itemBuilder: (context, snapshot, animation, index) {
-                  final json = snapshot.value as Map<dynamic, dynamic>;
-                  final message = Message.fromJson(json..values);
-                  return Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: message.idTo == uid
-                        ? CrossAxisAlignment.end
-                        : CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        color: Colors.grey,
-                        padding: const EdgeInsets.all(8.0),
-                        constraints: const BoxConstraints(maxWidth: 200.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(message.content!),
-                            const SizedBox(
-                              height: 2,
-                            ),
-                            Text(
-                              DateFormat.jm().format(message.date),
-                              style: const TextStyle(
-                                  color: Colors.red, fontSize: 12),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 10.0),
-                    ],
+                child: StreamBuilder(
+              stream: FirebaseDatabase.instance
+                  .ref("messages")
+                  .child(conversationId)
+                  .orderByChild('timestamp')
+                  .onValue,
+              builder: (BuildContext context,
+                  AsyncSnapshot<DatabaseEvent> snapshot) {
+                //print(snapshot.data?.snapshot.value);
+                List<Message> messages = [];
+                if (snapshot.data?.snapshot.value != null) {
+                  final json =
+                      snapshot.data?.snapshot.value as Map<dynamic, dynamic>;
+
+                  json.forEach(
+                      (key, value) => messages.add(Message.fromJson(value)));
+                  return ListView.builder(
+                    itemCount: messages.length,
+                    reverse: true,
+                    itemBuilder: (context, index) => MessageCard(
+                      message: messages[index],
+                      uid: uid,
+                    ),
                   );
-                },
-              ),
-              //
-              // StreamBuilder(
-              //   stream: FirebaseDatabase.instance
-              //       .ref("messages")
-              //       .child(conversationId)
-              //       .ref
-              //       .orderByChild('timestamp')
-              //       .limitToFirst(20)
-              //       .onValue,
-              //   builder:
-              //       (BuildContext context, AsyncSnapshot<DatabaseEvent> snapshot) {
-              //         listOfMessages.clear();
-              //     if (snapshot.hasData) {
-              //       var values =
-              //           snapshot.data?.snapshot.value as Map<dynamic, dynamic>?;
-              //       if (values != null) {
-              //         log(values.toString());
-              //         values.forEach((key, value) {
-
-              //           listOfMessages.add(Message.fromJson(value));
-              //         });
-
-              //         //listOfMessages.clear();
-              //       }
-
-              //       return ListView.builder(
-              //         padding: const EdgeInsets.all(10.0),
-              //         itemBuilder: (BuildContext context, int index) =>
-              //             Text(listOfMessages[index].message!),
-              //         itemCount: listOfMessages.length,
-              //         reverse: true,
-              //         // controller: listScrollController,
-              //       );
-              //     } else {
-              //       return Container();
-              //     }
-              //   },
-              // )
-            ),
-            SizedBox(
-                child: Padding(
-                  padding: const EdgeInsets.all(15.0),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: <Widget>[
-                      // Edit text
-                      Flexible(
-                        child: TextField(
-                          //autofocus: true,
-                          maxLines: 1,
-                          controller: textEditingController,
-                          decoration: const InputDecoration.collapsed(
-                            hintText: 'Type your message...',
-                          ),
-                        ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: IconButton(
-                          icon: const Icon(Icons.send, size: 25),
-                          onPressed: () =>
-                              onSendMessage(textEditingController.text),
-                        ),
-                      ),
-                    ],
+                } else {
+                  return ListView();
+                }
+              },
+            )),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: <Widget>[
+                // Edit text
+                Flexible(
+                  child: TextField(
+                    //autofocus: true,
+                    maxLines: 1,
+                    controller: textEditingController,
+                    decoration: const InputDecoration.collapsed(
+                      hintText: 'Type your message...',
+                    ),
                   ),
                 ),
-                width: double.infinity,
-                height: 100.0)
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: IconButton(
+                    icon: const Icon(Icons.send, size: 25),
+                    onPressed: () => onSendMessage(textEditingController.text),
+                  ),
+                ),
+              ],
+            )
           ],
         ),
       ),
@@ -156,16 +113,86 @@ class ChatScreen extends StatelessWidget {
     if (content.trim() != '') {
       textEditingController.clear();
       content = content.trim();
+      _scrollToBottom();
+      // _scrollController.animateTo(
+      //   _scrollController.position.maxScrollExtent,
+      //   curve: Curves.easeInOut,
+      //   duration: const Duration(milliseconds: 200),
+      // );
       DatabaseRepository.sendMessage(
         Message(
             date: DateTime.now(),
-            timeStamp: DateTime.now().millisecondsSinceEpoch.toString(),
+            timeStamp: (0 - DateTime.now().millisecondsSinceEpoch).toString(),
             content: content,
             idTo: contactId),
         conversationId,
       );
+      FocusManager.instance.primaryFocus?.unfocus();
       // listScrollController.animateTo(0.0,
       //     duration: Duration(milliseconds: 300), curve: Curves.easeOut);
     }
   }
 }
+
+class MessageCard extends StatelessWidget {
+  const MessageCard({
+    Key? key,
+    required this.message,
+    required this.uid,
+  }) : super(key: key);
+
+  final Message message;
+  final String uid;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.only(left: 14, right: 14, top: 10, bottom: 0),
+      child: Column(
+        crossAxisAlignment: message.idTo == uid
+            ? CrossAxisAlignment.start
+            : CrossAxisAlignment.end,
+        children: [
+          Align(
+            alignment:
+                (message.idTo == uid ? Alignment.topLeft : Alignment.topRight),
+            child: Container(
+              constraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width * 0.6,
+              ),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: (message.idTo == uid
+                    ? Colors.grey.shade200
+                    : Colors.blue[200]),
+              ),
+              padding: const EdgeInsets.all(8),
+              child: Text(
+                message.content!,
+                style: const TextStyle(fontSize: 15),
+              ),
+            ),
+          ),
+          Text(
+            DateFormat.jm().format(message.date),
+            style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+          ),
+        ],
+      ),
+    );
+  }
+}
+// FirebaseAnimatedList(
+//                 controller: _scrollController,
+//                 shrinkWrap: true,
+//                 reverse: true,
+//                 query: FirebaseDatabase.instance
+//                     .ref("messages")
+//                     .child(conversationId)
+//                     .orderByChild('timestamp'),
+//                 itemBuilder: (context, snapshot, animation, index) {
+//                   final json = snapshot.value as Map<dynamic, dynamic>;
+//                   final message = Message.fromJson(json..values);
+//                   return MessageCard(message: message, uid: uid);
+//                 },
+//               ),
